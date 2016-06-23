@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/ManualGradient" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>
