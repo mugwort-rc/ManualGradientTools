@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 /***************************************************************************
  ManualGradient
@@ -203,12 +206,14 @@ class ManualGradient:
             # substitute with your code.
             layer = self.dlg.comboBoxField.layer()
             field = self.dlg.comboBoxField.currentField()
+            altName = self.dlg.lineEditAltName.text()
             start = self.dlg.doubleSpinBoxStart.value()
             step = self.dlg.doubleSpinBoxStep.value()
             count = self.dlg.spinBoxCount.value()
-            self.graduate(layer, field, start, step, count)
+            suffix = self.dlg.lineEditSuffix.text()
+            self.graduate(layer, field, altName, start, step, count, suffix)
 
-    def graduate(self, layer, fieldName, start, step, count):
+    def graduate(self, layer, fieldName, altName, start, step, count, suffix):
         if not layer or not fieldName:
             return
         uniqueValues = layer.uniqueValues(layer.fieldNameIndex(fieldName))
@@ -225,14 +230,16 @@ class ManualGradient:
             new_symbol.setColor(ramp.color(float(i) / max(count-1, 1)))
             if i == count - 1:
                 current = maximum
-            ranges.append(QgsRendererRangeV2(previous, current, new_symbol, "{} - {}".format(math.ceil(previous), math.ceil(current))))
+            ranges.append(QgsRendererRangeV2(previous, current, new_symbol, "{} - {}{}".format(math.ceil(previous), math.ceil(current), suffix)))
             previous = current
             current += step
         layer.setRendererV2(QgsGraduatedSymbolRendererV2(fieldName, ranges))
         layer.triggerRepaint()
+        layer.setLayerName(altName or fieldName)
 
     @pyqtSlot(str)
     def on_fieldChanged(self, fieldName):
+        self.dlg.lineEditAltName.setText(fieldName)
         layer = self.dlg.comboBoxField.layer()
         minimum = min(layer.uniqueValues(layer.fieldNameIndex(fieldName)))
         self.dlg.doubleSpinBoxStart.setValue(minimum)
