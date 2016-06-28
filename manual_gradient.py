@@ -206,7 +206,9 @@ class ManualGradient:
             # substitute with your code.
             layer = self.dlg.comboBoxField.layer()
             field = self.dlg.comboBoxField.currentField()
-            altName = self.dlg.lineEditAltName.text()
+            altName = None
+            if self.dlg.checkBoxAltName.isChecked():
+                altName = self.dlg.lineEditAltName.text()
             start = self.dlg.doubleSpinBoxStart.value()
             step = self.dlg.doubleSpinBoxStep.value()
             count = self.dlg.spinBoxCount.value()
@@ -235,7 +237,8 @@ class ManualGradient:
             current += step
         layer.setRendererV2(QgsGraduatedSymbolRendererV2(fieldName, ranges))
         layer.triggerRepaint()
-        layer.setLayerName(altName or fieldName)
+        if altName:
+            layer.setLayerName(altName)
 
     @pyqtSlot(str)
     def on_fieldChanged(self, fieldName):
